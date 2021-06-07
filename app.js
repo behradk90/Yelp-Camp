@@ -3,9 +3,12 @@ const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
-const flash = require('connect-flash')
-const ExpressError = require('./utilities/ExpressError')
+const flash = require('connect-flash');
+const ExpressError = require('./utilities/ExpressError');
 const methodOverride = require('method-override');
+const passport = require('passport');
+const localStrategy = require('passport-local');
+const User = require('./models/user');
 
 
 const campgrounds = require('./routes/campgrounds');
@@ -17,11 +20,7 @@ mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useUnifiedTopology: true,
     useFindAndModify: false
 })
-// }).then(res => {
-//     console.log("DB Connected!")
-// }).catch(err => {
-//     console.log(Error, err.message);
-// })
+
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -52,10 +51,23 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error')
     next();
+})
+
+app.get('/fakeuser', async (req, res) => {
+    const user = new User({ email: 'behrad69@gmail.com', username: 'behrad69' });
+    const newUser = await User.register(user, 'behrad');
+    res.send(newUser);
 })
 
 app.use('/campgrounds', campgrounds)
