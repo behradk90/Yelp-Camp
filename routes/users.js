@@ -5,10 +5,15 @@ const wrapAsync = require('../utilities/wrapAsync')
 const user = require('../controllers/users');
 // const { delete } = require('./campgrounds');
 
-router.get('/register', (user.renderRegister));
-router.post('/register', wrapAsync(user.Register));
-router.get('/login', user.login)
-router.post('/login', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), user.loginSuccess)
+router.route('/register')
+    .get((user.renderRegister))
+    .post(wrapAsync(user.Register))
+
+
+router.route('/login')
+    .get(user.login)
+    .post(passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), user.loginSuccess)
+
 router.get('/logout', user.logout)
 
 module.exports = router;
