@@ -16,7 +16,7 @@ db.once("open", () => {
     console.log("Database connected");
 });
 
-const sample = (array) => array[Math.floor(Math.random() * array.length)]
+const sample = array => array[Math.floor(Math.random() * array.length)]
 
 const seedDb = async () => {
     await Campground.deleteMany({});
@@ -29,6 +29,10 @@ const seedDb = async () => {
             title: `${sample(descriptors)} ${sample(places)}`,
             description: ' Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam facere modi eos aliquid hic blanditiis nulla molestias corrupti architecto debitis eaque, reprehenderit sint culpa! Dolores ullam tenetur eaque iusto nemo.',
             price,
+            geometry: {
+                type: "Point",
+                coordinates: [-113.1331, 47.0202]
+            },
             images: [
                 {
                     url: 'https://res.cloudinary.com/dt8ay95hw/image/upload/v1623413467/YelpCamp/c4o1kpccoqy6txs8i9xs.jpg',
